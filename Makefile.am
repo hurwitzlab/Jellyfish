@@ -39,13 +39,15 @@ check_PROGRAMS = bin/generate_sequence
 ############################
 bin_jellyfish_SOURCES = sub_commands/jellyfish.cc			\
                         sub_commands/count_main.cc			\
-                        sub_commands/info_main.cc jellyfish/err.cc	\
-                        jellyfish/thread_exec.cc jellyfish/time.cc	\
-                        jellyfish/jsoncpp.cpp
+                        sub_commands/info_main.cc			\
+                        sub_commands/dump_main_cmdline.cc		\
+                        jellyfish/err.cc jellyfish/thread_exec.cc	\
+                        jellyfish/time.cc jellyfish/jsoncpp.cpp
 
 
 YAGGO_SOURCES += sub_commands/count_main_cmdline.hpp	\
-                 sub_commands/info_main_cmdline.hpp
+                 sub_commands/info_main_cmdline.hpp	\
+                 sub_commands/dump_main_cmdline.hpp
 
 ######################################
 # Build Jellyfish the shared library #
@@ -150,7 +152,8 @@ tests/parsers.log: tests/generate_sequence.log
 TESTS += unit_tests/unit_tests.sh
 check_PROGRAMS += bin/test_all
 
-bin_test_all_SOURCES = unit_tests/test_main.cc unit_tests/test_misc.cc	\
+bin_test_all_SOURCES = unit_tests/test_main.cc				\
+	               unit_tests/test_misc.cc				\
 	               unit_tests/test_offsets_key_value.cc		\
 	               unit_tests/test_simple_circular_buffer.cc	\
 	               unit_tests/test_rectangular_binary_matrix.cc	\
@@ -163,7 +166,8 @@ bin_test_all_SOURCES = unit_tests/test_main.cc unit_tests/test_misc.cc	\
 	               unit_tests/test_mer_heap.cc			\
 	               unit_tests/test_stream_iterator.cc		\
 	               unit_tests/test_token_ring.cc			\
-	               unit_tests/test_text_dumper.cc
+	               unit_tests/test_text_dumper.cc			\
+	               unit_tests/test_binary_dumper.cc
 
 bin_test_all_SOURCES += jellyfish/thread_exec.cc jellyfish/jsoncpp.cpp	\
                         jellyfish/time.cc
@@ -175,3 +179,11 @@ noinst_HEADERS += unit_tests/test_main.hpp
 
 include gtest.mk
 -include $(top_srcdir)/development.mk
+
+SUFFIXES = .dot .svg
+
+.cc.dot:
+	($(CXXCOMPILE) -E >/dev/null -H $<) 2>&1 | include_graph $(IGFLAGS) -o $@
+
+.dot.svg:
+	dot -T svg $< > $@

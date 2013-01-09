@@ -23,7 +23,7 @@
 
 namespace jellyfish {
 template<typename SequencePool, typename MerType>
-class mer_iterator : public std::iterator<std::input_iterator_tag,MerType> {
+class mer_iterator : public ::std::iterator< ::std::input_iterator_tag,MerType> {
   typename SequencePool::job* job_;
   const char*                 cseq_;
   MerType                     m_; // mer
@@ -76,7 +76,7 @@ public:
           m_.shift_left(code);
           if(canonical_)
             rcm_.shift_right(rcm_.complement(code));
-          filled_ = std::min(filled_ + 1, mer_dna::k());
+          filled_ = ::std::min(filled_ + 1, mer_dna::k());
         } else
           filled_ = 0;
       } while(filled_ < m_.k() && cseq_ < (*job_)->end);

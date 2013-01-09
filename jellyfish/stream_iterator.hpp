@@ -33,15 +33,15 @@ namespace jellyfish {
 /// iterator of std::ifstream. Every file is opened and closed in
 /// turn. The object instantiated with no argument is the end marker.
 template<typename PathIterator>
-class stream_iterator : public std::iterator<std::forward_iterator_tag, std::ifstream> {
-  PathIterator                 begin_, end_;
-  std::ifstream*               stream_;
+class stream_iterator : public ::std::iterator< ::std::forward_iterator_tag, ::std::ifstream> {
+  PathIterator     begin_, end_;
+  ::std::ifstream* stream_;
 public:
   stream_iterator(PathIterator begin, PathIterator end) :
     begin_(begin), end_(end), stream_(0)
   {
     if(begin_ != end_) {
-      stream_ = new std::ifstream;
+      stream_ = new ::std::ifstream;
       open_file();
     }
   }
@@ -57,8 +57,8 @@ public:
     return stream_ != rhs.stream_;
   }
 
-  std::ifstream& operator*() { return *stream_; }
-  std::ifstream* operator->() { return stream_; }
+  ::std::ifstream& operator*() { return *stream_; }
+  ::std::ifstream* operator->() { return stream_; }
 
   stream_iterator& operator++() {
     stream_->close();
@@ -81,7 +81,7 @@ protected:
   void open_file() {
     stream_->open(*begin_);
     if(stream_->fail())
-      eraise(std::runtime_error) << "Failed to open file '" << *begin_ << "'";
+      eraise(::std::runtime_error) << "Failed to open file '" << *begin_ << "'";
   }
 };
 

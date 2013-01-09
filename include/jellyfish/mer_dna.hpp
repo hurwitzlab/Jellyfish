@@ -175,6 +175,15 @@ public:
   /// Direct access to the data array.
   const base_type* data() const { return _data; }
 
+  /// Read from an istream. Templated on the alignment length in the
+  /// input stream.
+  template<size_t A>
+  void read(::std::istream& is) {
+    const unsigned int k = static_cast<const derived*>(this)->k();
+    is.read((char*)_data, k / (4 * A) + (k % (4 * A) != 0));
+    _data[nb_words() - 1] &= msw();
+  }
+
   bool operator==(const mer_base& rhs) const {
     unsigned int i = nb_words() - 1;
     bool res = (_data[i] & msw()) == (rhs._data[i] & msw());
@@ -256,14 +265,14 @@ public:
 
   derived& operator=(const char* s) {
     if(strlen(s) < static_cast<derived*>(this)->k())
-      throw std::length_error(error_short_string);
+      throw ::std::length_error(error_short_string);
     from_chars(s);
     return *static_cast<derived*>(this);
   }
 
-  derived& operator=(const std::string& s) {
+  derived& operator=(const ::std::string& s) {
     if(s.size() < static_cast<derived*>(this)->k())
-      throw std::length_error(error_short_string);
+      throw ::std::length_error(error_short_string);
     from_chars(s.c_str());
     return *static_cast<derived*>(this);
   }
@@ -385,8 +394,8 @@ public:
   }
 
   // Transfomr the k-mer into a C++ string.
-  std::string to_str() const {
-    std::string res(static_cast<const derived*>(this)->k(), '\0');
+  ::std::string to_str() const {
+    ::std::string res(static_cast<const derived*>(this)->k(), '\0');
     to_chars(res.begin());
     return res;
   }
@@ -527,7 +536,7 @@ public:
   explicit mer_base_dynamic(const char* s) : super(strlen(s)), k_(strlen(s)) {
     super::from_chars(s);
   }
-  explicit mer_base_dynamic(const std::string& s) : super(s.size()), k_(s.size()) {
+  explicit mer_base_dynamic(const ::std::string& s) : super(s.size()), k_(s.size()) {
     super::from_chars(s.begin());
   }
 
@@ -535,7 +544,7 @@ public:
 
   mer_base_dynamic& operator=(const mer_base_dynamic rhs) {
     if(k_ != rhs.k_)
-      throw std::length_error(error_different_k);
+      throw ::std::length_error(error_different_k);
     super::operator=(rhs);
     return *this;
   }
@@ -558,7 +567,7 @@ public:
   mer_base_static() : super(k_) { }
   explicit mer_base_static(unsigned int k) : super(k_) {
     if(k != k_)
-      throw std::length_error(error_different_k);
+      throw ::std::length_error(error_different_k);
   }
   mer_base_static(const mer_base_static& rhs) : super(rhs) { }
 
@@ -568,17 +577,17 @@ public:
   explicit mer_base_static(const char* s) : super(k_) {
     super::from_chars(s);
   }
-  explicit mer_base_static(const std::string& s) : super(k_) {
+  explicit mer_base_static(const ::std::string& s) : super(k_) {
     super::from_chars(s.begin());
   }
 
   mer_base_static& operator=(const char* s) { return super::operator=(s); }
-  mer_base_static& operator=(const std::string& s) { return super::operator=(s); }
+  mer_base_static& operator=(const ::std::string& s) { return super::operator=(s); }
 
   ~mer_base_static() { }
 
   static unsigned int k() { return k_; }
-  static unsigned int k(unsigned int k) { std::swap(k, k_); return k; }
+  static unsigned int k(unsigned int k) { ::std::swap(k, k_); return k; }
 private:
   static unsigned int k_;
 };
@@ -586,7 +595,7 @@ template<typename T>
 unsigned int mer_base_static<T>::k_ = 22;
 
 template<typename T, typename derived>
-std::ostream& operator<<(std::ostream& os, const mer_base<T, derived>& mer) {
+::std::ostream& operator<<(::std::ostream& os, const mer_base<T, derived>& mer) {
   char s[static_cast<derived>(mer).k() + 1];
   mer.to_str(s);
   return os << s;
@@ -603,7 +612,7 @@ typedef mer_dna_ns::mer_base_static<unsigned __int128> mer_dna128;
 
 typedef mer_dna64 mer_dna;
 
-inline std::ostream& operator<<(std::ostream& os, const mer_dna& m) {
+inline ::std::ostream& operator<<(::std::ostream& os, const mer_dna& m) {
   char s[m.k() + 1];
   m.to_str(s);
   return os << s;

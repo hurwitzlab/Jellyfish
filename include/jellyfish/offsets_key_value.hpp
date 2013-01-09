@@ -22,10 +22,9 @@
 #include <sstream>
 
 #include <jellyfish/misc.hpp>
-
-namespace jellyfish {
 #include <jellyfish/divisor.hpp>
 
+namespace jellyfish {
 /* A word is whatever aligned type used for atomic operations
  * (CAS). Typically, a uint64_t. We store pairs of (key, value), in a
  * bit packed fashion. The key and value can have abritrary size as

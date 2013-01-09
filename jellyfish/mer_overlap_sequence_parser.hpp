@@ -18,6 +18,10 @@
 #define __JELLYFISH_MER_OVELAP_SEQUENCE_PARSER_H_
 
 #include <stdint.h>
+
+#include <exception>
+#include <stdexcept>
+
 #include <jellyfish/err.hpp>
 
 namespace jellyfish {
@@ -111,7 +115,7 @@ protected:
       ignore_line(); // Pass header
       break;
     default:
-      eraise(std::runtime_error) << "Unsupported format"; // Better error management
+      eraise(::std::runtime_error) << "Unsupported format"; // Better error management
     }
   }
 
@@ -191,7 +195,7 @@ protected:
   }
 
   inline void ignore_line() {
-    current_file->ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    current_file->ignore(std::numeric_limits< ::std::streamsize>::max(), '\n');
   }
 
   inline void skip_newlines() {
@@ -214,7 +218,7 @@ protected:
     if(quals == read_len && (peek() == '@' || peek() == EOF))
       return;
 
-    eraise(std::runtime_error) << "Invalid fastq sequence";
+    eraise(::std::runtime_error) << "Invalid fastq sequence";
   }
 
   char peek() { return current_file->peek(); }

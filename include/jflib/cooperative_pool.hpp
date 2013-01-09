@@ -19,6 +19,9 @@
 #define __JFLIB_COOPERATIVE_POOL_HPP__
 
 #include <assert.h>
+#include <unistd.h>
+
+#include <iterator>
 
 #include <jellyfish/circular_buffer.hpp>
 #include <jellyfish/compare_and_swap.hpp>
@@ -152,7 +155,7 @@ public:
   friend class job;
 
   /// STL compliant iterator
-  class iterator : public std::iterator<std::input_iterator_tag, element_type> {
+  class iterator : public ::std::iterator< ::std::input_iterator_tag, element_type> {
     job* j_;
   public:
     iterator() : j_(0) { }
@@ -248,7 +251,7 @@ private:
   void delay(int iteration) {
     if(iteration < 16)
       return;
-    int shift = 10 - std::min(iteration - 16, 10);
+    int shift = 10 - ::std::min(iteration - 16, 10);
     usleep((1000000 - 1) >> shift);
   }
 };
