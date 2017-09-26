@@ -71,12 +71,13 @@ void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator fil
       }
       int mode = findMode(kmer_counts);
       if (mode >= min_mode) {
-        std::cout << ">" << j->data[i].header << "\n";
-        std::cout << "mode: " << mode << std::endl;
-        for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
-          std::cout << " " << *i;
-        }
-        std::cout << std::endl;
+        std::cout << j->data[i].header << "\n";
+        //std::cout << ">" << j->data[i].header << "\n";
+        //std::cout << "mode: " << mode << std::endl;
+        //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
+        //  std::cout << " " << *i;
+        //}
+        //std::cout << std::endl;
       }
     }
   }
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
     err::die(err::msg() << "Usage: " << argv[0] << " min_mode db.jf file.fa [...]");
 
   int min_mode = std::stoi(argv[1]);
-  std::cout << min_mode << std::endl;
+  //std::cout << min_mode << std::endl;
   std::ifstream in(argv[2], std::ios::in|std::ios::binary);
   jellyfish::file_header header(in);
   if(!in.good())

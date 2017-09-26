@@ -12,3 +12,5 @@ config.h.in~
 config.sub
 ltmain.sh
 *_cmdline.hpp
+*.o
+*.lo
