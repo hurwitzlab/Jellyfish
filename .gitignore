@@ -12,5 +12,9 @@ config.h.in~
 config.sub
 ltmain.sh
 *_cmdline.hpp
+<<<<<<< HEAD
 *.o
 *.lo
+=======
+test-driver
+>>>>>>> 2cff4e4c7eccabe43f46080adccedff720b138f1
