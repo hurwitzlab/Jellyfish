@@ -35,7 +35,6 @@ typedef jellyfish::whole_sequence_parser<jellyfish::stream_manager<char**> > seq
 
 std::vector<int> find_mode(std::vector<int> arr)
 {
-  std::cout << "start find_mode\n";
   std::map<int, int> mode_map;
   for (unsigned int i = 0; i < arr.size(); ++i) {
     ++mode_map[arr[i]];
@@ -55,7 +54,6 @@ std::vector<int> find_mode(std::vector<int> arr)
     }
   }
   std::sort(mode_vector.begin(), mode_vector.end());
-  std::cout << "done with find_mode\n";
   return mode_vector;
 }
 
@@ -86,28 +84,28 @@ void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator fil
       for (std::vector<int>::iterator it = kmer_counts.begin(); it != kmer_counts.end(); it++) {
         if (*it > 0) {
           non_zero_kmer_counts.push_back(*it);
-          std::cout << *it << "\n";
         }
         else {
         }
       }
 
       std::vector<int> sorted_mode_list = find_mode(non_zero_kmer_counts);
+      int mode;
       if (sorted_mode_list.size() == 0) {
-        std::cout << "found no mode\n";
+        mode = 0;
       }
       else {
-        int mode = sorted_mode_list[0];
-        std::cout << "mode is " << mode << "\n";
-        if (mode >= min_mode) {
-          std::cout << j->data[i].header << "\n";
-          //std::cout << ">" << j->data[i].header << "\n";
-          //std::cout << "mode: " << mode << std::endl;
-          //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
-          //  std::cout << " " << *i;
-          //}
-          //std::cout << std::endl;
-        }
+        mode = sorted_mode_list[0];
+      }
+
+      if (mode >= min_mode) {
+        std::cout << j->data[i].header << "\n";
+        //std::cout << ">" << j->data[i].header << "\n";
+        //std::cout << "mode: " << mode << std::endl;
+        //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
+        //  std::cout << " " << *i;
+        //}
+        //std::cout << std::endl;
       }
     }
   }
