@@ -77,7 +77,7 @@ void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator fil
       }
       for( ; mers != mers_end; ++mers) {
         kmer_counts.push_back(db.check(*mers));
-        std::cout << " " << db.check(*mers);
+        //std::cout << " " << db.check(*mers);
       }
 
       std::vector<int> non_zero_kmer_counts;
