@@ -33,18 +33,30 @@ using jellyfish::mer_dna;
 using jellyfish::mer_dna_bloom_counter;
 typedef jellyfish::whole_sequence_parser<jellyfish::stream_manager<char**> > sequence_parser;
 
-int findMode(std::vector<int> arr)
+std::vector<int> find_mode(std::vector<int> arr)
 {
-    std::map<int, int> modeMap;
-    for (unsigned int i = 0; i < arr.size(); ++i) {
-        ++modeMap[arr[i]];
+  std::cout << "start find_mode\n";
+  std::map<int, int> mode_map;
+  for (unsigned int i = 0; i < arr.size(); ++i) {
+    ++mode_map[arr[i]];
+  }
+
+  auto max_count_pair = std::max_element(mode_map.begin(), mode_map.end(),
+  [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+  return a.second < b.second; });
+
+  // find all elements of mode_map with x->second == max_count_pair->second
+  std::vector<int> mode_vector;
+  for (std::map<int,int>::iterator it=mode_map.begin(); it!=mode_map.end(); ++it) {
+    if (it->second == max_count_pair->second) {
+      mode_vector.push_back(it->first);
     }
-
-    auto x = std::max_element(modeMap.begin(), modeMap.end(),
-        [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
-        return a.second < b.second; });
-
-    return x->first;
+    else {
+    }
+  }
+  std::sort(mode_vector.begin(), mode_vector.end());
+  std::cout << "done with find_mode\n";
+  return mode_vector;
 }
 
 template<typename PathIterator, typename Database>
@@ -67,17 +79,35 @@ void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator fil
       }
       for( ; mers != mers_end; ++mers) {
         kmer_counts.push_back(db.check(*mers));
-        //std::cout << " " << db.check(*mers);
+        std::cout << " " << db.check(*mers);
       }
-      int mode = findMode(kmer_counts);
-      if (mode >= min_mode) {
-        std::cout << j->data[i].header << "\n";
-        //std::cout << ">" << j->data[i].header << "\n";
-        //std::cout << "mode: " << mode << std::endl;
-        //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
-        //  std::cout << " " << *i;
-        //}
-        //std::cout << std::endl;
+
+      std::vector<int> non_zero_kmer_counts;
+      for (std::vector<int>::iterator it = kmer_counts.begin(); it != kmer_counts.end(); it++) {
+        if (*it > 0) {
+          non_zero_kmer_counts.push_back(*it);
+          std::cout << *it << "\n";
+        }
+        else {
+        }
+      }
+
+      std::vector<int> sorted_mode_list = find_mode(non_zero_kmer_counts);
+      if (sorted_mode_list.size() == 0) {
+        std::cout << "found no mode\n";
+      }
+      else {
+        int mode = sorted_mode_list[0];
+        std::cout << "mode is " << mode << "\n";
+        if (mode >= min_mode) {
+          std::cout << j->data[i].header << "\n";
+          //std::cout << ">" << j->data[i].header << "\n";
+          //std::cout << "mode: " << mode << std::endl;
+          //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
+          //  std::cout << " " << *i;
+          //}
+          //std::cout << std::endl;
+        }
       }
     }
   }
