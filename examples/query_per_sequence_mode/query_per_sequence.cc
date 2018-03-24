@@ -58,7 +58,7 @@ std::vector<int> find_mode(std::vector<int> arr)
 }
 
 template<typename PathIterator, typename Database>
-void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator file_end, const Database& db,
+void query_from_sequence(int min_mode, int min_non_zero_kmer_counts, PathIterator file_begin, PathIterator file_end, const Database& db,
                          bool canonical) {
   jellyfish::stream_manager<PathIterator> streams(file_begin, file_end);
   sequence_parser                         parser(4, 100, 1, streams);
@@ -89,23 +89,28 @@ void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator fil
         }
       }
 
-      std::vector<int> sorted_mode_list = find_mode(non_zero_kmer_counts);
-      int mode;
-      if (sorted_mode_list.size() == 0) {
-        mode = 0;
+      if (non_zero_kmer_counts.size() < min_non_zero_kmer_counts) {
+        // move on
       }
       else {
-        mode = sorted_mode_list[0];
-      }
+        std::vector<int> sorted_mode_list = find_mode(non_zero_kmer_counts);
+        int mode;
+        if (sorted_mode_list.size() == 0) {
+          mode = 0;
+        }
+        else {
+          mode = sorted_mode_list[0];
+        }
 
-      if (mode >= min_mode) {
-        std::cout << j->data[i].header << "\n";
-        //std::cout << ">" << j->data[i].header << "\n";
-        //std::cout << "mode: " << mode << std::endl;
-        //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
-        //  std::cout << " " << *i;
-        //}
-        //std::cout << std::endl;
+        if (mode >= min_mode) {
+          std::cout << j->data[i].header << "\n";
+          //std::cout << ">" << j->data[i].header << "\n";
+          //std::cout << "mode: " << mode << std::endl;
+          //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
+          //  std::cout << " " << *i;
+          //}
+          //std::cout << std::endl;
+        }
       }
     }
   }
@@ -114,14 +119,17 @@ void query_from_sequence(int min_mode, PathIterator file_begin, PathIterator fil
 int main(int argc, char *argv[])
 {
   if(argc < 4)
-    err::die(err::msg() << "Usage: " << argv[0] << " min_mode db.jf file.fa [...]");
+    err::die(err::msg() << "Usage: " << argv[0] << " min_mode min_counts db.jf file.fa [...]");
 
   int min_mode = std::stoi(argv[1]);
+  int min_non_zero_kmer_counts = std::stoi(argv[2]);
+  char* db_jf = argv[3];
+
   //std::cout << min_mode << std::endl;
-  std::ifstream in(argv[2], std::ios::in|std::ios::binary);
+  std::ifstream in(db_jf, std::ios::in|std::ios::binary);
   jellyfish::file_header header(in);
   if(!in.good())
-    err::die(err::msg() << "Failed to parse header of file '" << argv[2] << "'");
+    err::die(err::msg() << "Failed to parse header of file '" << db_jf << "'");
   mer_dna::k(header.key_len() / 2);
   if(header.format() == "bloomcounter") {
     jellyfish::hash_pair<mer_dna> fns(header.matrix(1), header.matrix(2));
@@ -129,12 +137,12 @@ int main(int argc, char *argv[])
     if(!in.good())
       err::die("Bloom filter file is truncated");
     in.close();
-    query_from_sequence(min_mode, argv + 3, argv + argc, filter, header.canonical());
+    query_from_sequence(min_mode, min_non_zero_kmer_counts, argv + 4, argv + argc, filter, header.canonical());
   } else if(header.format() == binary_dumper::format) {
-    jellyfish::mapped_file binary_map(argv[2]);
+    jellyfish::mapped_file binary_map(db_jf);
     binary_query bq(binary_map.base() + header.offset(), header.key_len(), header.counter_len(), header.matrix(),
                     header.size() - 1, binary_map.length() - header.offset());
-    query_from_sequence(min_mode, argv + 3, argv + argc, bq, header.canonical());
+    query_from_sequence(min_mode, min_non_zero_kmer_counts, argv + 4, argv + argc, bq, header.canonical());
   } else {
     err::die(err::msg() << "Unsupported format '" << header.format() << "'. Must be a bloom counter or binary list.");
   }
