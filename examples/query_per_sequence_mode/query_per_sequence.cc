@@ -103,8 +103,9 @@ void query_from_sequence(int min_mode, int min_non_zero_kmer_counts, PathIterato
         }
 
         if (mode >= min_mode) {
-          std::cout << j->data[i].header << "\n";
-          //std::cout << ">" << j->data[i].header << "\n";
+          //std::cout << j->data[i].header << "\n";
+          std::cout << ">" << j->data[i].header << "\n";
+          std::cout << j->data[i].seq << "\n";
           //std::cout << "mode: " << mode << std::endl;
           //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
           //  std::cout << " " << *i;
