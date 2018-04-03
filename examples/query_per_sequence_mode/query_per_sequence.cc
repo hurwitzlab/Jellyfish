@@ -89,7 +89,7 @@ void query_from_sequence(int min_mode, int min_non_zero_kmer_counts, PathIterato
         }
       }
 
-      if (non_zero_kmer_counts.size() < min_non_zero_kmer_counts) {
+      if ((non_zero_kmer_counts.size()/kmer_counts.size()) < min_non_zero_kmer_counts) {
         // move on
       }
       else {
