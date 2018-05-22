@@ -85,14 +85,13 @@ void query_from_sequence(int min_mode, int min_non_zero_kmer_counts, PathIterato
         if (*it > 0) {
           non_zero_kmer_counts.push_back(*it);
         }
-        else {
-        }
       }
 
       int pct = (int)(100 * (float)non_zero_kmer_counts.size() / (float)kmer_counts.size());
 
       if (pct < min_non_zero_kmer_counts) {
-        // move on
+        std::cerr << ">" << j->data[i].header << "\n";
+        std::cerr << j->data[i].seq << "\n";
       }
       else {
         std::vector<int> sorted_mode_list = find_mode(non_zero_kmer_counts);
@@ -105,14 +104,12 @@ void query_from_sequence(int min_mode, int min_non_zero_kmer_counts, PathIterato
         }
 
         if (mode >= min_mode) {
-          //std::cout << j->data[i].header << "\n";
           std::cout << ">" << j->data[i].header << "\n";
           std::cout << j->data[i].seq << "\n";
-          //std::cout << "mode: " << mode << std::endl;
-          //for (auto i = kmer_counts.begin(); i != kmer_counts.end(); ++i) {
-          //  std::cout << " " << *i;
-          //}
-          //std::cout << std::endl;
+        }
+        else {
+          std::cerr << ">" << j->data[i].header << "\n";
+          std::cerr << j->data[i].seq << "\n";
         }
       }
     }
